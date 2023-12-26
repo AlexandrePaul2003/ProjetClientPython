@@ -56,24 +56,13 @@ def getCannals():
     canaux = ""
     donnee = pack("ii", 8, 1)
     client_socket.send(donnee)
-    client_socket.setblocking(True)
-    donnees = client_socket.recv(1024)
-    print(donnees.decode())
-    type = unpack('i', donnees[:calcsize('i')])[0]
-    print("type:" + str(type))
-    if type == 1:
-        taille = unpack('i', donnees[4:8])[0]
-        # taille = 12
-        print("taille: " + str(taille))
-        donnees = client_socket.recv(1024)
-        print(donnee.decode())
-        canaux = unpack(f"{taille}s", donnees)[0].decode('utf-8')
-
-        print("canaux: " + canaux)
 
 
-    client_socket.setblocking(False)
-    printNewCanals(canaux)
+
+
+
+
+
 
 
 def printNewCanals(canaux):
@@ -299,11 +288,21 @@ def recepServer():
     for s in sockets:
         print('reception')
         donnees = client_socket.recv(1024)
+        print("donne : "+str(donnees))
         # type=1
         try:
             type = unpack('i', donnees[:calcsize('i')])[0]
             print("unpacked")
-            if (type == 7):
+            if type == 1:
+                print("receiving canals")
+                Ctaille = unpack('i', donnees[4:8])[0]
+                print("taille: " + str(Ctaille))
+                #donnees = client_socket.recv(1024)
+                canaux = unpack(f"{Ctaille-1}s", donnees[8:8+Ctaille-1])[0].decode('utf-8')
+                print("debug 1")
+                if(Ctaille!=0):
+                    printNewCanals(canaux)
+            elif type == 7:
                 print("receiving message")
                 messageReceived(donnees)
                 print('tg')
